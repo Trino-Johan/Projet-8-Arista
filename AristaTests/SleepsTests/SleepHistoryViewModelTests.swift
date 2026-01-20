@@ -120,4 +120,43 @@ final class SleepHistoryViewModelTests: XCTestCase {
         newSleep.user = newUser
         try! context.save()
     }
+    
+    func test_WhenReloadIsCalled_FetchSleepSessions_UpdatesList() {
+        let persistenceController = PersistenceController(inMemory: true)
+        emptyEntities(context: persistenceController.container.viewContext)
+        
+        let viewModel = SleepHistoryViewModel(context: persistenceController.container.viewContext)
+        
+        let expectation1 = XCTestExpectation(description: "initial empty list")
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            XCTAssert(viewModel.sleepSessions.isEmpty)
+            expectation1.fulfill()
+        }
+        
+        wait(for: [expectation1], timeout: 1)
+        
+        // Ajouter une session après le chargement initial
+        let startDate = Date()
+        addSleepSession(context: persistenceController.container.viewContext,
+                       startDate: startDate,
+                       duration: 480,
+                       quality: 4,
+                       userFirstName: "Test",
+                       userLastName: "User")
+        
+        // Appeler reload
+        viewModel.reload()
+        
+        let expectation2 = XCTestExpectation(description: "list updated after reload")
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            XCTAssert(viewModel.sleepSessions.count == 1)
+            XCTAssert(viewModel.sleepSessions.first?.quality == 4)
+            expectation2.fulfill()
+        }
+        
+        wait(for: [expectation2], timeout: 1)
+    }
+
 }

@@ -125,5 +125,30 @@ final class UserDataViewModelTests: XCTestCase {
         
         try! context.save()
     }
+    
+    func test_WhenUserHasBothNamesEmpty_FetchUserData_LoadsEmptyStrings() throws {
+        // Given
+        let user = User(context: persistenceController.container.viewContext)
+        user.firstName = ""
+        user.lastName = ""
+        try persistenceController.container.viewContext.save()
+        
+        let repository = UserRepository(viewContext: persistenceController.container.viewContext)
+        
+        // When
+        let viewModel = UserDataViewModel(userRepository: repository)
+        
+        // Then
+        let expectation = XCTestExpectation(description: "fetch user with empty names")
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            XCTAssertEqual(viewModel.firstName, "")
+            XCTAssertEqual(viewModel.lastName, "")
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: 1)
+    }
+
 }
 

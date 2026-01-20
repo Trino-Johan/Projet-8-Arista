@@ -140,4 +140,44 @@ final class ExerciseListViewModelTests: XCTestCase {
         newExercise.user = newUser
         try! context.save()
     }
+    
+    func test_WhenReloadIsCalled_FetchExercises_UpdatesList() {
+        let persistenceController = PersistenceController(inMemory: true)
+        emptyEntities(context: persistenceController.container.viewContext)
+        
+        let viewModel = ExerciseListViewModel(context: persistenceController.container.viewContext)
+        
+        let expectation1 = XCTestExpectation(description: "initial empty list")
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            XCTAssert(viewModel.exercises.isEmpty)
+            expectation1.fulfill()
+        }
+        
+        wait(for: [expectation1], timeout: 1)
+        
+        // Ajouter un exercice après le chargement initial
+        let date = Date()
+        addExercise(context: persistenceController.container.viewContext,
+                   category: "Running",
+                   duration: 30,
+                   intensity: 5,
+                   startDate: date,
+                   userFirstName: "Test",
+                   userLastName: "User")
+        
+        // Appeler reload
+        viewModel.reload()
+        
+        let expectation2 = XCTestExpectation(description: "list updated after reload")
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            XCTAssert(viewModel.exercises.count == 1)
+            XCTAssert(viewModel.exercises.first?.category == "Running")
+            expectation2.fulfill()
+        }
+        
+        wait(for: [expectation2], timeout: 1)
+    }
+
 }
