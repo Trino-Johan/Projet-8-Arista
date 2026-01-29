@@ -1,5 +1,4 @@
 import Foundation
-import CoreData
 
 final class UserDataViewModel: ObservableObject {
     @Published var firstName: String = ""

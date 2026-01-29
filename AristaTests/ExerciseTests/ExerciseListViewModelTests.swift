@@ -1,46 +1,29 @@
 import XCTest
 import CoreData
-import Combine
 @testable import Arista
 
 final class ExerciseListViewModelTests: XCTestCase {
-    
-    var cancellables = Set<AnyCancellable>()
-    
-    override func setUpWithError() throws {
-        // Setup code before each test
-    }
-    
-    override func tearDownWithError() throws {
-        // Cleanup code after each test
-        cancellables.removeAll()
-    }
     
     // MARK: - Tests
     
     func test_WhenNoExerciseIsInDatabase_FetchExercise_ReturnEmptyList() {
         let persistenceController = PersistenceController(inMemory: true)
-        emptyEntities(context: persistenceController.container.viewContext)
+        let testContext = persistenceController.container.viewContext
+        emptyEntities(context: testContext)
         
-        let viewModel = ExerciseListViewModel(context: persistenceController.container.viewContext)
-        let expectation = XCTestExpectation(description: "fetch empty list of exercise")
+        let repository = ExerciseRepository(viewContext: testContext)
+        let viewModel = ExerciseListViewModel(repository: repository)
         
-        viewModel.$exercises
-            .sink { exercises in
-                XCTAssert(exercises.isEmpty)
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
-        
-        wait(for: [expectation], timeout: 10)
+        XCTAssert(viewModel.exercises.isEmpty)
     }
     
     func test_WhenAddingOneExerciseInDatabase_FetchExercise_ReturnAListContainingTheExercise() {
         let persistenceController = PersistenceController(inMemory: true)
-        emptyEntities(context: persistenceController.container.viewContext)
+        let testContext = persistenceController.container.viewContext
+        emptyEntities(context: testContext)
         let date = Date()
         
-        addExercise(context: persistenceController.container.viewContext,
+        addExercise(context: testContext,
                    category: "Football",
                    duration: 10,
                    intensity: 5,
@@ -48,32 +31,26 @@ final class ExerciseListViewModelTests: XCTestCase {
                    userFirstName: "Eric",
                    userLastName: "Marcus")
         
-        let viewModel = ExerciseListViewModel(context: persistenceController.container.viewContext)
-        let expectation = XCTestExpectation(description: "fetch list with one exercise")
+        let repository = ExerciseRepository(viewContext: testContext)
+        let viewModel = ExerciseListViewModel(repository: repository)
         
-        viewModel.$exercises
-            .sink { exercises in
-                XCTAssert(exercises.isEmpty == false)
-                XCTAssert(exercises.first?.category == "Football")
-                XCTAssert(exercises.first?.duration == 10)
-                XCTAssert(exercises.first?.intensity == 5)
-                XCTAssert(exercises.first?.startDate == date)
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
-        
-        wait(for: [expectation], timeout: 10)
+        XCTAssert(viewModel.exercises.isEmpty == false)
+        XCTAssert(viewModel.exercises.first?.category == "Football")
+        XCTAssert(viewModel.exercises.first?.duration == 10)
+        XCTAssert(viewModel.exercises.first?.intensity == 5)
+        XCTAssert(viewModel.exercises.first?.startDate == date)
     }
     
     func test_WhenAddingMultipleExerciseInDatabase_FetchExercise_ReturnAListContainingTheExerciseInTheRightOrder() {
         let persistenceController = PersistenceController(inMemory: true)
-        emptyEntities(context: persistenceController.container.viewContext)
+        let testContext = persistenceController.container.viewContext
+        emptyEntities(context: testContext)
         
         let date1 = Date()
         let date2 = Date(timeIntervalSinceNow: -(60*60*24))
         let date3 = Date(timeIntervalSinceNow: -(60*60*24*2))
         
-        addExercise(context: persistenceController.container.viewContext,
+        addExercise(context: testContext,
                    category: "Football",
                    duration: 10,
                    intensity: 5,
@@ -81,7 +58,7 @@ final class ExerciseListViewModelTests: XCTestCase {
                    userFirstName: "Eric",
                    userLastName: "Marcus")
         
-        addExercise(context: persistenceController.container.viewContext,
+        addExercise(context: testContext,
                    category: "Running",
                    duration: 120,
                    intensity: 1,
@@ -89,7 +66,7 @@ final class ExerciseListViewModelTests: XCTestCase {
                    userFirstName: "Bob",
                    userLastName: "Marceau")
         
-        addExercise(context: persistenceController.container.viewContext,
+        addExercise(context: testContext,
                    category: "Fitness",
                    duration: 30,
                    intensity: 5,
@@ -97,20 +74,40 @@ final class ExerciseListViewModelTests: XCTestCase {
                    userFirstName: "Fred",
                    userLastName: "Martin")
         
-        let viewModel = ExerciseListViewModel(context: persistenceController.container.viewContext)
-        let expectation = XCTestExpectation(description: "fetch list with multiple exercises")
+        let repository = ExerciseRepository(viewContext: testContext)
+        let viewModel = ExerciseListViewModel(repository: repository)
         
-        viewModel.$exercises
-            .sink { exercises in
-                XCTAssert(exercises.count == 3)
-                XCTAssert(exercises[0].category == "Football")
-                XCTAssert(exercises[1].category == "Fitness")
-                XCTAssert(exercises[2].category == "Running")
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
+        XCTAssertEqual(viewModel.exercises.count, 3)
+        XCTAssertEqual(viewModel.exercises[0].category, "Football")
+        XCTAssertEqual(viewModel.exercises[1].category, "Fitness")
+        XCTAssertEqual(viewModel.exercises[2].category, "Running")
+    }
+    
+    func test_WhenReloadIsCalled_FetchExercises_UpdatesList() {
+        let persistenceController = PersistenceController(inMemory: true)
+        let testContext = persistenceController.container.viewContext
+        emptyEntities(context: testContext)
         
-        wait(for: [expectation], timeout: 10)
+        let repository = ExerciseRepository(viewContext: testContext)
+        let viewModel = ExerciseListViewModel(repository: repository)
+        
+        XCTAssert(viewModel.exercises.isEmpty)
+        
+        // Ajouter un exercice
+        let date = Date()
+        addExercise(context: testContext,
+                   category: "Running",
+                   duration: 30,
+                   intensity: 5,
+                   startDate: date,
+                   userFirstName: "Test",
+                   userLastName: "User")
+        
+        // Appeler reload
+        viewModel.reload()
+        
+        XCTAssertEqual(viewModel.exercises.count, 1)
+        XCTAssertEqual(viewModel.exercises.first?.category, "Running")
     }
     
     // MARK: - Helper Methods
@@ -140,44 +137,4 @@ final class ExerciseListViewModelTests: XCTestCase {
         newExercise.user = newUser
         try! context.save()
     }
-    
-    func test_WhenReloadIsCalled_FetchExercises_UpdatesList() {
-        let persistenceController = PersistenceController(inMemory: true)
-        emptyEntities(context: persistenceController.container.viewContext)
-        
-        let viewModel = ExerciseListViewModel(context: persistenceController.container.viewContext)
-        
-        let expectation1 = XCTestExpectation(description: "initial empty list")
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            XCTAssert(viewModel.exercises.isEmpty)
-            expectation1.fulfill()
-        }
-        
-        wait(for: [expectation1], timeout: 1)
-        
-        // Ajouter un exercice après le chargement initial
-        let date = Date()
-        addExercise(context: persistenceController.container.viewContext,
-                   category: "Running",
-                   duration: 30,
-                   intensity: 5,
-                   startDate: date,
-                   userFirstName: "Test",
-                   userLastName: "User")
-        
-        // Appeler reload
-        viewModel.reload()
-        
-        let expectation2 = XCTestExpectation(description: "list updated after reload")
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            XCTAssert(viewModel.exercises.count == 1)
-            XCTAssert(viewModel.exercises.first?.category == "Running")
-            expectation2.fulfill()
-        }
-        
-        wait(for: [expectation2], timeout: 1)
-    }
-
 }

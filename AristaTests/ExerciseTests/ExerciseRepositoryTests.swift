@@ -40,7 +40,7 @@ final class ExerciseRepositoryTests: XCTestCase {
         emptyEntities(context: persistenceController.container.viewContext)
         
         let data = ExerciseRepository(viewContext: persistenceController.container.viewContext)
-        let exercises = try! data.getExercise()
+        let exercises = try! data.getExercises()
         
         XCTAssert(exercises.isEmpty == true)
     }
@@ -60,7 +60,7 @@ final class ExerciseRepositoryTests: XCTestCase {
                    userLastName: "Marcus")
         
         let data = ExerciseRepository(viewContext: persistenceController.container.viewContext)
-        let exercises = try! data.getExercise()
+        let exercises = try! data.getExercises()
         
         XCTAssert(exercises.isEmpty == false)
         XCTAssert(exercises.first?.category == "Football")
@@ -103,7 +103,7 @@ final class ExerciseRepositoryTests: XCTestCase {
                    userLastName: "Marcus")
         
         let data = ExerciseRepository(viewContext: persistenceController.container.viewContext)
-        let exercises = try! data.getExercise()
+        let exercises = try! data.getExercises()
         
         XCTAssert(exercises.count == 3)
         XCTAssert(exercises[0].category == "Football")
@@ -130,7 +130,7 @@ final class ExerciseRepositoryTests: XCTestCase {
         )
         
       
-        let exercises = try! repository.getExercise()
+        let exercises = try! repository.getExercises()
         XCTAssert(exercises.count == 1)
         XCTAssert(exercises.first?.category == "Running")
         XCTAssert(exercises.first?.duration == 30)
@@ -148,7 +148,7 @@ final class ExerciseRepositoryTests: XCTestCase {
         try! repository.addExercise(category: "Running", duration: 30, intensity: 7, startDate: Date())
         try! repository.addExercise(category: "Football", duration: 60, intensity: 5, startDate: Date())
        
-        let exercises = try! repository.getExercise()
+        let exercises = try! repository.getExercises()
         XCTAssert(exercises.count == 2)
     }
 

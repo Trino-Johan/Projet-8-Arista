@@ -210,6 +210,6 @@ struct IntensityIndicator: View {
 
 #if DEBUG
 #Preview {
-    ExerciseListView(viewModel: ExerciseListViewModel(context: PersistenceController.preview.container.viewContext))
+    ExerciseListView(viewModel: ExerciseListViewModel())
 }
 #endif

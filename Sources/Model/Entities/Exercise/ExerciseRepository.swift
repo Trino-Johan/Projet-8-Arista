@@ -8,7 +8,7 @@ struct ExerciseRepository {
         self.viewContext = viewContext
     }
     
-    func getExercise() throws -> [Exercise] {
+    func getExercises() throws -> [Exercise] {
         let request = Exercise.fetchRequest()
         request.sortDescriptors = [NSSortDescriptor(keyPath: \Exercise.startDate, ascending: false)]
         

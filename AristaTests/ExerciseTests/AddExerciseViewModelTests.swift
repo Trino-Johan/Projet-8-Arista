@@ -54,14 +54,4 @@ final class AddExerciseViewModelTests: XCTestCase {
             XCTFail("startDate should not be nil")
         }
     }
-    
-    func test_WhenAddingMultipleExercises_AllExercisesAreSaved() throws {
-        // Given & When
-        viewModel.category = "Running"
-        viewModel.duration = 30
-        viewModel.intensity = 5
-        viewModel.startTime = Date()
-        viewModel.addExercise()
-        viewModel.category
-    }
 }

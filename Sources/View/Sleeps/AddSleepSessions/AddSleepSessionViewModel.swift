@@ -1,5 +1,4 @@
 import Foundation
-import CoreData
 
 final class AddSleepSessionViewModel: ObservableObject {
     @Published var startTime: Date = Date()

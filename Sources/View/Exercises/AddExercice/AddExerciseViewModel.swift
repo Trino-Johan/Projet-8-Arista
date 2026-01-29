@@ -1,5 +1,4 @@
 import Foundation
-import CoreData
 
 final class AddExerciseViewModel: ObservableObject {
     @Published var category: String = ""

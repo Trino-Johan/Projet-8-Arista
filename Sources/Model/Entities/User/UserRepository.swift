@@ -13,5 +13,6 @@ struct UserRepository {
         request.fetchLimit = 1 // recupere un seul user
         return try viewContext.fetch(request).first
     }
+    
 }
 
