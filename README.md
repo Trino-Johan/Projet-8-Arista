@@ -29,11 +29,3 @@
 <img src="https://github.com/user-attachments/assets/abf64d98-26bc-4516-897f-a4f90340074d" width="200" style="margin-right:12px;" />
 <img src="https://github.com/user-attachments/assets/ed5e1a6a-fcd8-46d8-b87d-3280ad130aac" width="200" style="margin-right:12px;" />
 </p>
-
-## 🚀 Installation rapide
-
-```bash
-git clone https://github.com/Trino-Johan/arista.git
-cd arista
-open Arista.xcodeproj  # ou .xcworkspace si SPM/Carthage
-# Xcode 16+ | iOS 17+ Simulator
