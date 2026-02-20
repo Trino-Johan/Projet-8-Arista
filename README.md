@@ -1,9 +1,26 @@
-Application Arista, servant à suivre le sommeil et ses sessions d'exercices variés.
+# 📱 Arista - Suivi Sommeil & Exercices
 
-Le projet est en Swift et utilise le framework SwiftUI.
+**Application iOS pour tracker vos sessions de sommeil et exercices variés.**
 
-## 📱 Aperçu de l’application Application iOS développée en Swift. 
+[![Swift](https://img.shields.io/badge/Swift-5.9%2B-orange.svg?style=flat&logo=swift)](https://swift.org)
+[![SwiftUI](https://img.shields.io/badge/SwiftUI-5.0%2B-blue.svg)](https://developer.apple.com/xcode/swiftui/)
+[![iOS](https://img.shields.io/badge/iOS-17.0%2B-lightgrey.svg)](https://developer.apple.com/ios/)
 
+## ✨ Fonctionnalités principales
+
+- ✅ Suivi détaillé des sessions de sommeil (durée, qualité, notes)
+- ✅ Catalogue d'exercices variés avec timers
+- ✅ Statistiques et historique personnel
+- ✅ Interface intuitive à onglets (Profil / Exercices / Sommeil)
+
+## 🏗️ Stack technique
+
+- **Architecture** : MVVM
+- **Données** : Core Data
+- **UI/UX** : SwiftUI natif, NavigationStack, SF Symbols
+- **Outils** : Xcode 16+, iOS 17+
+
+## 📸 Screenshots
 
 <p>
 <img src="https://github.com/user-attachments/assets/a84476c4-9bd9-48b6-a63c-f51626507cfb" width="200" style="margin-right:12px;" />
@@ -13,4 +30,10 @@ Le projet est en Swift et utilise le framework SwiftUI.
 <img src="https://github.com/user-attachments/assets/ed5e1a6a-fcd8-46d8-b87d-3280ad130aac" width="200" style="margin-right:12px;" />
 </p>
 
+## 🚀 Installation rapide
 
+```bash
+git clone https://github.com/Trino-Johan/arista.git
+cd arista
+open Arista.xcodeproj  # ou .xcworkspace si SPM/Carthage
+# Xcode 16+ | iOS 17+ Simulator
